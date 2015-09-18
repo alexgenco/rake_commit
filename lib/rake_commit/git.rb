@@ -3,13 +3,14 @@ require 'shellwords'
 module RakeCommit
   class Git
 
-    def initialize(build_command, collapse_commits = true, rebase_only = false, incremental = false, prompt_exclusions = [], precommit = nil)
+    def initialize(build_command, collapse_commits = true, rebase_only = false, incremental = false, prompt_exclusions = [], precommit = nil, use_editor = false)
       @build_command = build_command
       @collapse_commits = collapse_commits
       @rebase_only = rebase_only
       @incremental = incremental
       @prompt_exclusions = prompt_exclusions
       @precommit = precommit
+      @use_editor = use_editor
     end
 
     def commit
@@ -77,8 +78,13 @@ module RakeCommit
       unless commit_message.author.nil?
         RakeCommit::Shell.system("git config user.name #{Shellwords.shellescape(commit_message.author)}")
       end
-      message = [commit_message.feature, commit_message.message].compact.join(" - ")
-      RakeCommit::Shell.system("git commit -m #{Shellwords.shellescape(message)}")
+
+      if @use_editor
+        RakeCommit::Shell.system("git commit -v")
+      else
+        message = [commit_message.feature, commit_message.message].compact.join(" - ")
+        RakeCommit::Shell.system("git commit -m #{Shellwords.shellescape(message)}")
+      end
     end
 
     def reset_soft

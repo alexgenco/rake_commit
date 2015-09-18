@@ -83,6 +83,12 @@ This tells rake_commit not to prompt and make a new commit. This is useful when 
 
 This will cause rake_commit to skip the named prompt. For example, if you are working by yourself and do not need to prompt for an author, you can use `--without-prompt author`.
 
+```bash
+--use-editor
+```
+
+This will allow the user to write their commit message by invoking git's configured `core.editor`. This option implies `--without-prompt feature` and `--without-prompt message`.
+
 ### Configuration
 
 If the same command line arguments are always used, they can be added to a `.rake_commit` file in the root of the project. For example, this `.rake_commit` file will tell `rake_commit` to only prompt for message:

@@ -31,7 +31,15 @@ module RakeCommit
       if git_svn?
         RakeCommit::GitSvn.new(options[:prompt_exclusions]).commit
       elsif git?
-        RakeCommit::Git.new(options[:build_command], options[:collapse_commits], options[:rebase_only], options[:incremental], options[:prompt_exclusions], options[:precommit]).commit
+        RakeCommit::Git.new(
+          options[:build_command],
+          options[:collapse_commits],
+          options[:rebase_only],
+          options[:incremental],
+          options[:prompt_exclusions],
+          options[:precommit],
+          options[:use_editor]
+        ).commit
       else
         RakeCommit::Svn.new(options[:prompt_exclusions]).commit
       end
@@ -62,6 +70,10 @@ module RakeCommit
         end
         opts.on("-b", "--build-command SCRIPT", "the command that verifies the commit, defaults to rake") do |command|
           options[:build_command] = command
+        end
+        opts.on("-e", "--use-editor", "Use $EDITOR to edit the commit message") do |command|
+          options[:use_editor] = true
+          options[:prompt_exclusions] |= ["feature", "message"]
         end
       end
 

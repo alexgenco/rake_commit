@@ -504,6 +504,23 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
+  def test_use_editor
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      in_git_repo do
+        RakeCommit::Shell.system "touch new_file"
+        RakeCommit::Shell.system "git add new_file"
+        RakeCommit::Shell.system "yes author | EDITOR='vim -u NONE \"+normal imsg\" +wq' ../../../bin/rake_commit --use-editor"
+
+        message = RakeCommit::Shell.backtick("git log -1 --format=%B")
+        author = RakeCommit::Shell.backtick("git log -1 --format=%an")
+        assert_equal("msg", message.strip)
+        assert_equal("author", author.strip)
+      end
+    end
+  end
+
   def create_git_repo
     FileUtils.mkdir "git_repo"
     Dir.chdir("git_repo") do
